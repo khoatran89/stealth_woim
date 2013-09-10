@@ -1,0 +1,52 @@
+#form {
+  width: 460px;
+}
+
+#user-viewing {
+  font-size: 40px;
+  color: #555555;
+}
+
+ul.track-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 460px;
+}
+
+ul.track-list li {
+  background: #444444;
+  border: 1px #555555 solid;
+  list-style-type: none;
+  color: #ffffff;
+  padding: 5px 15px;
+  cursor: pointer;
+}
+
+ul.track-list li:hover {
+  background: #45ADA8;
+}
+
+ul.track-list li.playing {
+  background: #acacac;
+}
+
+#random-albums {
+  height: 500px;
+  overflow: scroll;
+}
+
+div.album {
+  width: 100%;
+  background: #cacaca;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+div.album:hover {
+  background: #45ADA8;
+}
+
+div.album.playing {
+  background: #acacac;
+}

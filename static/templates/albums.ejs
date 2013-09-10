@@ -1,0 +1,6 @@
+<% for (var i=0; i < albums.length; i++) {%>
+  <div class='album' data-url='<%= albums[i].url %>'>
+    <img src='<%= albums[i].thumb %>'>
+    <span class='title'><%= albums[i].title %></span>
+  </div>
+<% } %>

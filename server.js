@@ -1,12 +1,18 @@
-var express = require('express');
-var request = require('request');
-var swig = require('swig');
-var app = express();
+var express = require('express'),
+    request = require('request'),
+    swig    = require('swig'),
+    app     = express(),
+    http    = require('http'),
+    server  = http.createServer(app),
+    socket  = require('socket.io').listen(server);
 
-var RG_LIST_URL = /name="flashvars" value=".*?(http:\/\/.*?)"/
-var RG_ALL_TRACKS = /location="(http:\/\/.*?)">(.*?)<\/track>/g
-var RG_WOIM_MELODY = /nhac_hieu\.mp3/
 
+var RG_LIST_URL = /name="flashvars" value=".*?(http:\/\/.*?)"/,
+    RG_ALL_TRACKS = /location="(http:\/\/.*?)">(.*?)<\/track>/g,
+    RG_WOIM_MELODY = /nhac_hieu\.mp3/,
+    RG_ALBUMS = /href="(http:\/\/www\.woim\.net\/album\/.*?)" title="(.*?)".*?src="(.*?)"/g;
+
+server.listen(3000);
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
@@ -19,7 +25,7 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.post('/getTracks', function(req, res){
+app.post('/getTracks', function(req, res) {
   request.get(req.query.url, function (error, response, body) {
       var listUrl= body.match(RG_LIST_URL)[1];
       request.get(listUrl, function(error, response, body) {
@@ -35,6 +41,27 @@ app.post('/getTracks', function(req, res){
   );
 });
 
+app.get('/getRandomAlbums', function(req, res) {
+  request.get('http://www.woim.net/nhac-khong-loi-hay-nhat.html',
+    function (error, response, body) {
+      var albums = [];
+      while ((results = RG_ALBUMS.exec(body)) !== null) {
+        albums.push({ url: results[1], title: results[2], thumb: results[3] });
+      }
+      return res.json(albums);
+    }
+  );
+});
+
 app.use('/static', express.static(__dirname + '/static'));
 
-app.listen(3000);
+var count = 0;
+socket.on('connection', function(client) {
+  count++;
+  client.emit('message', { count: count });
+  client.broadcast.emit('message', { count: count });
+  client.on('disconnect', function() {
+    count--;
+    client.broadcast.emit('message', { count: count });
+  });
+});
